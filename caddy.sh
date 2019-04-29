@@ -1,11 +1,17 @@
 #!/bin/sh
 
-if [[ -z ${API_ADDR} ]]; then
-    echo need env APP_ADDR
+ADDR=$1
+
+if [[ -z ${ADDR} ]]; then
+    ADDR=${API_ADDR}
+fi
+
+if [[ -z ${ADDR} ]]; then
+    echo need env API_ADDR
     exit 1
 fi
 
-if [[ "${API_ADDR: -1}" == "/" ]]; then
+if [[ "${ADDR: -1}" == "/" ]]; then
     without="
         without /api"
 fi
@@ -13,7 +19,7 @@ fi
 cat >Caddyfile <<EOF
 :80 {
     root www
-    proxy /api/ ${API_ADDR} {${without}
+    proxy /api/ ${ADDR} {${without}
         header_upstream Host {host}
         header_upstream X-Real-IP {remote}
         header_upstream X-Forwarded-For {remote}
@@ -34,4 +40,4 @@ cat >Caddyfile <<EOF
 }
 EOF
 
-./jaddy
+/caddy
